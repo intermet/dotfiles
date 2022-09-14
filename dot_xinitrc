@@ -1,0 +1,5 @@
+polybar example&
+redshift -P -O 5000&
+#exec xmonad
+exec bspwm
+
