@@ -33,12 +33,20 @@
   "Edit the `user-init-file', in another window."
   (interactive)
   (find-file user-init-file))
+
 (global-set-key (kbd "C-c I") #'find-user-init-file)
 
 (straight-use-package 'use-package)
 
+
+
 (use-package straight
   :custom (straight-use-package-by-default t))
+
+
+(use-package orderless
+  :init
+  :custom (completion-styles '(orderless)))
 
 (use-package fira-code-mode
   :custom (fira-code-mode-disabled-ligatures '("x" "[]" "<>"))
@@ -183,6 +191,26 @@
 
 
 
+(defun orderless-fast-dispatch (word index total)
+  (and (= index 0) (= total 1) (length< word 4)
+       `(orderless-regexp . ,(concat "^" (regexp-quote word)))))
+
+(orderless-define-completion-style orderless-fast
+  (orderless-style-dispatchers '(orderless-fast-dispatch))
+  (orderless-matching-styles '(orderless-literal orderless-regexp)))
+
+;; (use-package corfu
+;;   :init
+;;   :config
+;;   (setq corfu-auto t)
+;;   (setq corfu-auto-prefix 1)
+;;   (setq corfu-auto-delay 0)
+;;   (setq completion-styles '(orderless-fast))
+;;   (global-corfu-mode)
+;;   )
+
+
+
 (use-package company
   :config
   (add-hook 'after-init-hook 'global-company-mode)
@@ -203,8 +231,6 @@
 ;; ;;   )
 
 
-(use-package orderless
-  :custom (completion-styles '(orderless)))
 
 (use-package restart-emacs)
 
@@ -272,6 +298,9 @@
 ;;                           (require 'lsp-pyright)
 ;;                           (lsp)))) 
 
+;; (use-package eglot
+;;   :init
+;;   )
 (use-package lsp-mode
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
@@ -279,12 +308,51 @@
   (setq read-process-output-max (* 1024 1024))
   (setq lsp-idle-delay 0.500)
   (setq lsp-keymap-prefix "C-c l")
+  (setq lsp-ui-sideline-enable nil)
+  (setq lsp-ui-sideline-show-hover nil)
+  (setq lsp-lens-enable nil)
+  (setq lsp-signature-auto-activate nil)
+  (setq lsp-signature-render-documentation nil)
+
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         (python-mode . lsp)
          (TeX-mode . lsp)
          (tuareg-mode . lsp)
+         (haskell-mode . lsp)
          )
   :commands lsp)
+
+
+(use-package lsp-haskell)
+
+
+(use-package pipenv
+  :hook (python-mode . pipenv-mode)
+  :init
+  (setq
+   pipenv-projectile-after-switch-function
+   #'pipenv-projectile-after-switch-extended))
+
+(use-package lsp-pyright
+  :hook (python-mode . lsp)
+  )
+
+(use-package blacken
+  :init
+  (setq-default blacken-fast-unsafe t)
+  (setq-default blacken-line-length 80)
+  )
+
+
+(use-package pyvenv
+  :init
+  (setenv "WORKON_HOME" "~/.venv/")
+  :config
+  (setq pyvenv-post-activate-hooks
+        (list (lambda ()
+                (setq python-shell-interpreter (concat pyvenv-virtual-env "bin/python")))))
+  (setq pyvenv-post-deactivate-hooks
+        (list (lambda ()
+                (setq python-shell-interpreter "python3")))))
 
 ;; (use-package magit)
 
@@ -387,7 +455,81 @@
 ;;   ;; Enable Flycheck checker
 ;;   (flycheck-ocaml-setup))
 
-;; (add-hook 'tuareg-mode-hook #'merlin-mode)
+(add-hook 'tuareg-mode-hook #'merlin-mode)
+
+
+(use-package tree-sitter
+  :hook
+  (python-mode . tree-sitter-hl-mode)
+  (tuareg-mode . tree-sitter-hl-mode)
+  (TeX-mode . tree-sitter-hl-mode)
+  ;; (haskell-mode . tree-sitter-hl-mode)
+  )
+
+;; (use-package tree-sitter-langs
+;;   )
+
+(use-package tree-sitter-langs
+  :straight (tree-sitter-langs
+             :host github
+             :depth full
+             :repo "intermet/tree-sitter-langs"
+             :branch "master"
+             )
+  :config
+  (add-to-list 'tree-sitter-major-mode-language-alist '(latex-mode . latex))
+ )
+
+
+(use-package ocamlformat)
+(add-hook 'tuareg-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook #'ocamlformat-before-save)
+            )
+          )
+
+;; (use-package cdlatex
+;;   :straight
+;;   (
+;;    cdlatex
+;;    :repo "cdominik/cdlatex"
+;;    :host github
+;;    )
+;;   :hook (
+;;          (LaTeX-mode . turn-on-cdlatex)
+;;          )
+;;   )
+
+
+(use-package hydra)
+
+(defun find-user-init-file ()
+  "Edit the `user-init-file', in another window."
+  (interactive)
+  (find-file user-init-file))
+
+(defun find-xmonadhs ()
+  (interactive)
+  (find-file "~/.xmonad/xmonad.hs")
+  )
+
+(defhydra hydra-edit-config-files (:color pink
+                             :hint nil)
+"
+^Edit^
+_i_: init.el    _j_: xinit
+_x_: xmonad.hs  _z_: zshrc
+_b_: xmobarrc
+"
+  ("i" find-user-init-file :color blue)
+  ("x" (find-file "~/.xmonad/xmonad.hs") :color blue)
+  ("b" (find-file "~/.xmobarrc") :color blue)
+  ("z" (find-file "~/.zshrc") :color blue)
+  ("j" (find-file "~/.xinitrc") :color blue)
+  ("q" nil :color blue)
+)
+
+(global-set-key (kbd "C-c I") 'hydra-edit-config-files/body)
 
 ;; (custom-set-variables
 ;;  ;; custom-set-variables was added by Custom.
@@ -402,6 +544,6 @@
 ;;  ;; Your init file should contain only one such instance.
 ;;  ;; If there is more than one, they won't work right.
 ;;  )
-;; ;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
-;; (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
-;; ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line
