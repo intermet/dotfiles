@@ -3,6 +3,7 @@ Config {
        , bgColor = "#000000"
        , fgColor = "#ffffff"
        , position = Top
+       , border = FullB
        , template = "<icon=bind.xpm/> %StdinReader%}{%dynnetwork% | %coretemp% | %memory% | %multicpu% | %date% "
        , overrideRedirect = True
        , persistent = True

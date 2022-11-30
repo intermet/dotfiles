@@ -19,7 +19,7 @@ bindkey "^[[B" down-line-or-beginning-search # Down
 
 alias ls="exa"
 alias vim="nvim"
-alias tigergpu="ssh tigergpu -t tmux"
+alias dellagpu="ssh dellagpu -t zsh"
 
 alias config='/usr/bin/git --git-dir=$HOME/.dotfiles/.git/ --work-tree=$HOME'
 
@@ -58,3 +58,4 @@ eval $(opam env)
 
 
 export PATH=/home/ziyed/scripts:$PATH
+source /home/ziyed/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

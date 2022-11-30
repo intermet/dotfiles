@@ -12,7 +12,7 @@ super + @space
 	#rofi -show drun -show-icons
 
 super + f
-	 rofi -modi file-browser-extended -show file-browser-extended -show-icons
+	bspc node -t \~fullscreen
 
 super + e
     emacs

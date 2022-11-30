@@ -1,5 +1,6 @@
-polybar example&
+#polybar example&
 redshift -P -O 5000&
-#exec xmonad
-exec bspwm
+feh --bg-center .config/wallpaper
+exec xmonad
+#exec bspwm
 

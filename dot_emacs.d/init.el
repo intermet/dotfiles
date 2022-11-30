@@ -556,13 +556,13 @@ _b_: xmobarrc
 
 (use-package dired
   :straight (:type built-in)
-  ;; :hook (dired-mode . dired-hide-details-mode)
+  :hook
+  (dired-mode . dired-hide-details-mode)
   :config
   ;; Colourful columns.
-  (use-package diredfl
-    :ensure t
-    :config
-    (diredfl-global-mode 1))
+  (setq dired-listing-switches
+        "-GFhlv --group-directories-first --time-style=long-iso")
+  (use-package dired-subtree)
   )
 
 (global-set-key (kbd "C-c I") 'hydra-edit-config-files/body)
