@@ -3,15 +3,16 @@ Config {
        , bgColor = "#000000"
        , fgColor = "#ffffff"
        , position = Top
-       , template = "%StdinReader%}{%dynnetwork% | %coretemp% | %memory% | %multicpu% | %date% "
+       , template = "<icon=bind.xpm/> %StdinReader%}{%dynnetwork% | %coretemp% | %memory% | %multicpu% | %date% "
        , overrideRedirect = True
        , persistent = True
+       , iconRoot = ".config/icons/"
        , commands = [
-         Run Memory ["-t","Mem: <usedratio>%"] 10
-       , Run DynNetwork [ "-t" , "<dev>: <rx>kB/s"] 10
-       , Run MultiCpu [ "-t" , "Cpu: <total0>%|<total1>%"] 10
-       , Run CoreTemp ["-t","Temp: <core0>C"] 10
-       , Run Date           "%F (%a) %T" "date" 10
+         Run Memory ["-t","<icon=mem.xpm/><usedratio>%"] 10
+       , Run DynNetwork [ "-t" , "<icon=net.xpm/><dev>:<rx>kB/s"] 10
+       , Run MultiCpu [ "-t" , "<icon=cpu.xpm/><total0>%|<total1>%"] 10
+       , Run CoreTemp ["-t","<core0>C"] 10
+       , Run Date           "<icon=calendar.xpm/>%F %T" "date" 10
        , Run Swap [] 10
        , Run StdinReader
        ]

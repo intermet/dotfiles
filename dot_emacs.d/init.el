@@ -29,12 +29,12 @@
         (?\" . ?\")
         (?\{ . ?\})))
 
-(defun find-user-init-file ()
-  "Edit the `user-init-file', in another window."
-  (interactive)
-  (find-file user-init-file))
+;; (defun find-user-init-file ()
+;;   "Edit the `user-init-file', in another window."
+;;   (interactive)
+;;   (find-file user-init-file))
 
-(global-set-key (kbd "C-c I") #'find-user-init-file)
+;; (global-set-key (kbd "C-c I") #'find-user-init-file)
 
 (straight-use-package 'use-package)
 
@@ -481,12 +481,35 @@
  )
 
 
-(use-package ocamlformat)
+(use-package ocamlformat
+  :config
+  (setq ocamlformat-show-errors "None")
+  )
+
 (add-hook 'tuareg-mode-hook
           (lambda ()
             (add-hook 'before-save-hook #'ocamlformat-before-save)
             )
           )
+
+
+(use-package rg
+  :config
+  (rg-define-search ziyed/rg
+    :query ask
+    :format regexp
+    :dir (
+          let ((vc (vc-root-dir)))
+           (if vc
+               vc
+             default-directory
+               )
+           )
+    :flags ("--hidden -g !.git")
+    )
+  :bind
+  ("C-c C-r" . ziyed/rg)
+  )
 
 ;; (use-package cdlatex
 ;;   :straight
@@ -528,6 +551,19 @@ _b_: xmobarrc
   ("j" (find-file "~/.xinitrc") :color blue)
   ("q" nil :color blue)
 )
+
+(use-package iedit)
+
+(use-package dired
+  :straight (:type built-in)
+  ;; :hook (dired-mode . dired-hide-details-mode)
+  :config
+  ;; Colourful columns.
+  (use-package diredfl
+    :ensure t
+    :config
+    (diredfl-global-mode 1))
+  )
 
 (global-set-key (kbd "C-c I") 'hydra-edit-config-files/body)
 
