@@ -9,11 +9,12 @@ import XMonad.Layout.Gaps
 import XMonad.Layout.ToggleLayouts
 import XMonad.Layout.MultiToggle as Multi
 import XMonad.Layout.MultiToggle.Instances as MultiI
+import XMonad.Actions.WindowBringer
 
 main :: IO ()
 
 myLayout = Multi.mkToggle1 MultiI.NBFULL $ (myTall ||| myFull)
-  where myTall = spacingWithEdge 10 $ Tall 1 (3/100) (1/2)
+  where myTall = spacingWithEdge 3 $ Tall 1 (3/100) (1/2)
         myFull = Full
 
 main = xmonad =<< statusBar myBar myPP toggleStrutsKey myConfig
@@ -35,6 +36,7 @@ keys =
   , ("M-e", spawn "emacs")
   , ("M-f", sendMessage $ Multi.Toggle MultiI.NBFULL)
   , ("M-d", spawn "~/.config/Ankama/Retro/dofus1electron")
+  , ("M-w", gotoMenu)
   ]
   
 myConfig = def

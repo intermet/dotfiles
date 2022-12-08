@@ -20,8 +20,14 @@
 (setq default-fill-column 80)
 (global-display-fill-column-indicator-mode)
 (global-display-line-numbers-mode)
+
+(add-hook 'compilation-mode-hook (lambda() (display-line-numbers-mode -1)))
+(add-hook 'dired-mode-hook (lambda() (display-line-numbers-mode -1)))
+
 (global-auto-revert-mode t)
 
+(add-to-list 'default-frame-alist
+             '(vertical-scroll-bars . nil))
 
 (electric-pair-mode 1)
 (setq electric-pair-pairs
@@ -29,20 +35,10 @@
         (?\" . ?\")
         (?\{ . ?\})))
 
-;; (defun find-user-init-file ()
-;;   "Edit the `user-init-file', in another window."
-;;   (interactive)
-;;   (find-file user-init-file))
-
-;; (global-set-key (kbd "C-c I") #'find-user-init-file)
-
 (straight-use-package 'use-package)
-
-
 
 (use-package straight
   :custom (straight-use-package-by-default t))
-
 
 (use-package orderless
   :init
@@ -80,15 +76,6 @@
   (telephone-line-mode 1)
   )
 
-;; (straight-use-package
-;;  '(awsome=-tray
-;;   :type git
-;;   :host github
-;;   :repo "manateelazycat/awesome-tray"
-;;   )
-;;   )
-
-
 (use-package dashboard
   :custom
   (dashboard-startup-banner 'logo)
@@ -101,20 +88,8 @@
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
-;; ;icons
 (use-package all-the-icons
   :if (display-graphic-p))
-
-
-;; (use-package eldoc
-;;   :custom
-;;   (eldoc-echo-area-use-multiline-p nil))
-
-;; (use-package rg)
-
-;; (use-package wgrep)
-
-;; (use-package vterm)
 
 (use-package popper
   :bind (("C-`"   . popper-toggle-latest)
@@ -130,7 +105,6 @@
   (popper-mode +1)
   (popper-echo-mode +1))     
 
-;evil
 (use-package evil
   :init
   (setq evil-want-integration t)
@@ -138,7 +112,6 @@
   :config
   (evil-mode 1)
   )
-
 
 (define-key evil-normal-state-map (kbd "<up>") 'nope)
 (define-key evil-normal-state-map (kbd "<down>") 'nope)
@@ -158,38 +131,12 @@
   :config
   (evil-collection-init))
 
-;; (use-package evil-surround
-;;   :ensure t
-;;   :config
-;;   (global-evil-surround-mode 1))
-
 (use-package evil-goggles
   :custom
   (evil-goggles-duration 0.100)
   :config
   (evil-goggles-mode)
   (evil-goggles-use-diff-faces))
-
-;; (use-package treemacs
-;;   :init
-;;   (add-hook 'treemacs-mode-hook (lambda() (display-line-numbers-mode -1)))
-;;   :bind
-;;   ("C-x C-t" . treemacs)
-;;   :config ;;   (progn
-;;     (setq 
-;;           treemacs-indentation                     2
-;;           treemacs-indentation-string              " "
-;;           treemacs-is-never-other-window           nil
-;;           treemacs-move-forward-on-expand          nil
-;;           treemacs-show-cursor                     nil
-;;           treemacs-width                           28
-;;     )
-
-;;     )
-;;   (treemacs-resize-icons 16)
-;;   )
-
-
 
 (defun orderless-fast-dispatch (word index total)
   (and (= index 0) (= total 1) (length< word 4)
@@ -198,18 +145,6 @@
 (orderless-define-completion-style orderless-fast
   (orderless-style-dispatchers '(orderless-fast-dispatch))
   (orderless-matching-styles '(orderless-literal orderless-regexp)))
-
-;; (use-package corfu
-;;   :init
-;;   :config
-;;   (setq corfu-auto t)
-;;   (setq corfu-auto-prefix 1)
-;;   (setq corfu-auto-delay 0)
-;;   (setq completion-styles '(orderless-fast))
-;;   (global-corfu-mode)
-;;   )
-
-
 
 (use-package company
   :config
@@ -223,14 +158,6 @@
   :init
   (which-key-mode)
   )
-
-;; ;; (use-package recentf
-;; ;;   :init
-;; ;;   (recentf-mode t)
-;; ;;   (setq recentf-max-saved-items 50)
-;; ;;   )
-
-
 
 (use-package restart-emacs)
 
@@ -248,37 +175,6 @@
   )
 
 
-;; (use-package embark
-;;   :ensure t
-
-;;   :bind
-;;   (("C-." . embark-act)         ;; pick some comfortable binding
-;;    ("C-," . embark-export)        ;; good alternative: M-.
-;;    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
-;;   :init
-
-;;   ;; Optionally replace the key help with a completing-read interface
-;;   (setq prefix-help-command #'embark-prefix-help-command)
-
-;;   :config
-
-;;   ;; Hide the mode line of the Embark live/completions buffers
-;;   (add-to-list 'display-buffer-alist
-;;                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-;;                  nil
-;;                  (window-parameters (mode-line-format . none)))))
-
-;; ;; Consult users will also want the embark-consult package.
-;; (use-package embark-consult
-;;   :ensure t
-;;   :after (embark consult)
-;;   :demand t ; only necessary if you have the hook below
-;;   ;; if you want to have consult previews as you move around an
-;;   ;; auto-updating embark collect buffer
-;;   :hook
-;;   (embark-collect-mode . consult-preview-at-point-mode))
-
 (use-package marginalia
    :config
    (marginalia-mode)
@@ -290,17 +186,11 @@
 (use-package ace-window
   :bind
   ("M-o" . 'ace-window)
+  :config
+  (setq aw-ignore-on t)
+  (setq aw-ignored-buffers popper-reference-buffers)
   )
 
-;; (use-package lsp-pyright
-;;   :ensure t
-;;   :hook (python-mode . (lambda ()
-;;                           (require 'lsp-pyright)
-;;                           (lsp)))) 
-
-;; (use-package eglot
-;;   :init
-;;   )
 (use-package lsp-mode
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
@@ -323,7 +213,6 @@
 
 
 (use-package lsp-haskell)
-
 
 (use-package pipenv
   :hook (python-mode . pipenv-mode)
@@ -354,21 +243,6 @@
         (list (lambda ()
                 (setq python-shell-interpreter "python3")))))
 
-;; (use-package magit)
-
-;; (use-package cdlatex
-;;   :straight
-;;   (
-;;    cdlatex
-;;    :repo "cdominik/cdlatex"
-;;    :host github
-;;    )
-;;   :hook (
-;;          (LaTeX-mode . turn-on-cdlatex)
-;;          )
-;;   )
-
-
 (use-package langtool
   :straight
   (langtool
@@ -379,7 +253,6 @@
   (setq langtool-java-classpath
       "/usr/share/languagetool:/usr/share/java/languagetool/*")
   )
-
 
 (use-package cdlatex
   :config
@@ -400,34 +273,16 @@
    )
   )
 
-(setq TeX-view-program-selection '((output-pdf "Okular")))
+(setq TeX-view-program-selection '((output-pdf "PDF Tools")))
 (setq TeX-source-correlate-mode t)
 (setq TeX-source-correlate-start-server t)
-
+(add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
+              #'TeX-revert-document-buffer)
+(add-hook 'LaTeX-mode-hook 'TeX-source-correlate-mode)
 (use-package lsp-latex
   :config
   (setq lsp-latex-build-on-save t)
   )
-
-;; (add-hook 'cdlatex-tab-hook 'LaTeX-indent-line)
-          ;; (defun cdlatex-indent-maybe ()
-          ;;   (when (or (bolp) (looking-back "^[ \t]+"))
-          ;;     (LaTeX-indent-line))))
-
-;; (use-package auctex-latexmk
-;;   :config
-;;   (auctex-latexmk-setup)
-;;   )
-
-
-
-;; ;; (add 'LaTeX-mode-hook
-;; ;;      (lamnda ()
-;; ;;              ()
-;; ;;              )
-;; ;;      )
-
-;; ;; (load-library "~/.emacs.d/straight/local/auxlabel/auxlabel.el")
 
 ;; ;; (use-package pdf-tools)
 ;; ;; (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
@@ -441,22 +296,13 @@
 ;; ;; ;;   (setq auctex-latexmk-inherit-TeX-PDF-mode t)
 ;; ;; ;; )
 
-;; ;; (require 'ocamlformat)
-;; (add-hook 'tuareg-mode-hook
-;;           (lambda ()
-;;             (add-hook 'before-save-hook #'ocamlformat-before-save)))
-
-;; (use-package flycheck-ocaml)
-
-;; (with-eval-after-load 'merlin
-;;   ;; Disable Merlin's own error checking
-;;   (setq merlin-error-after-save nil)
-
-;;   ;; Enable Flycheck checker
-;;   (flycheck-ocaml-setup))
-
-(add-hook 'tuareg-mode-hook #'merlin-mode)
-
+(use-package tuareg
+  :hook
+  (tuareg-mode . merlin-mode)
+  :config
+  (evil-set-initial-state 'utop-mode 'emacs)
+  (add-hook 'utop-mode-hook (lambda() (display-line-numbers-mode -1)))
+  )
 
 (use-package tree-sitter
   :hook
@@ -465,9 +311,6 @@
   (TeX-mode . tree-sitter-hl-mode)
   ;; (haskell-mode . tree-sitter-hl-mode)
   )
-
-;; (use-package tree-sitter-langs
-;;   )
 
 (use-package tree-sitter-langs
   :straight (tree-sitter-langs
@@ -508,23 +351,41 @@
     :flags ("--hidden -g !.git")
     )
   :bind
-  ("C-c C-r" . ziyed/rg)
+  ("C-c r" . ziyed/rg)
   )
 
-;; (use-package cdlatex
-;;   :straight
-;;   (
-;;    cdlatex
-;;    :repo "cdominik/cdlatex"
-;;    :host github
-;;    )
-;;   :hook (
-;;          (LaTeX-mode . turn-on-cdlatex)
-;;          )
-;;   )
 
+(defun ziyed/dune-build ()
+  (interactive)
+  (let
+    ((default-directory (vc-root-dir)))
+    (compile "dune build bin/main.exe")
+  )
+  )
+
+(defun ziyed/dune-exec ()
+  (interactive)
+  (let
+    ((default-directory (vc-root-dir)))
+    (compile "dune exe -- bin/main.exe")
+  )
+  )
 
 (use-package hydra)
+
+(defhydra ziyed/hydra-dune (:color pink
+                             :hint nil)
+"
+^edit^
+_b_: build
+_x_: exec 
+"
+  ("b" ziyed/dune-build :color blue)
+  ("x" ziyed/dune-exec :color blue)
+)
+(global-set-key (kbd "C-c c") 'ziyed/hydra-dune/body)
+
+
 
 (defun find-user-init-file ()
   "Edit the `user-init-file', in another window."
@@ -539,7 +400,7 @@
 (defhydra hydra-edit-config-files (:color pink
                              :hint nil)
 "
-^Edit^
+^edit^
 _i_: init.el    _j_: xinit
 _x_: xmonad.hs  _z_: zshrc
 _b_: xmobarrc
@@ -552,7 +413,24 @@ _b_: xmobarrc
   ("q" nil :color blue)
 )
 
-(use-package iedit)
+;; (use-package iedit)
+
+
+(defun ziyed/dired-vc ()
+  (interactive)
+  (let
+  ((dir (if (vc-root-dir) (dired-noselect (vc-root-dir)) (dired-noselect default-directory))))
+  (display-buffer-in-side-window
+   dir
+   `((side . left)
+     (slot . 0)
+     (window-width . 0.15)
+     (window-parameters . ((mode-line-format . (" " "%b"))))
+     )
+   )
+  (ace-window dir)
+  )
+  )
 
 (use-package dired
   :straight (:type built-in)
@@ -562,24 +440,42 @@ _b_: xmobarrc
   ;; Colourful columns.
   (setq dired-listing-switches
         "-GFhlv --group-directories-first --time-style=long-iso")
+  (setq dired-omit-files "[~#]$")
+  (global-set-key (kbd "C-c d") 'ziyed/dired-vc)
   (use-package dired-subtree)
+  (add-hook 'dired-mode-hook (lambda() (display-line-numbers-mode -1)))
+  (add-hook 'dired-mode-hook (lambda () (dired-omit-mode)))
   )
+
 
 (global-set-key (kbd "C-c I") 'hydra-edit-config-files/body)
 
-;; (custom-set-variables
-;;  ;; custom-set-variables was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(custom-safe-themes
-;;    '("801a567c87755fe65d0484cb2bded31a4c5bb24fd1fe0ed11e6c02254017acb2" default)))
-;; (custom-set-faces
-;;  ;; custom-set-faces was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  )
-;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+
+(use-package perspective
+  :bind
+  ("C-x C-b" . persp-switch-to-buffer*)
+  :custom
+  (persp-mode-prefix-key (kbd "C-c p"))
+  :init
+  (persp-mode)
+  :bind
+  ()
+  )
+
+(use-package find-file-in-project)
+
+(use-package vterm
+  :config
+  (evil-set-initial-state 'vterm-mode 'emacs)
+  (add-hook 'vterm-mode-hook (lambda() (display-line-numbers-mode -1)))
+  )
+
+
+(use-package pdf-tools
+  :config
+  (add-hook 'doc-view-mode-hook (lambda() (display-line-numbers-mode -1)))
+  )
+
+
+ 
 (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
-;; ## end of OPAM user-setup addition for emacs / base ## keep this line
