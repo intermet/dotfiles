@@ -44,12 +44,14 @@ toggleStrutsKey XConfig {XMonad.modMask = modMask} = (modMask, xK_b)
 
 keys = 
   [
-    ("M-<Space>", spawn "dmenu_run -b -fn 'Fira Code-11' -nb black -sb '#555555' -nf white")
+    ("M-<Space>", spawn "dmenu_run -b -fn 'Fira Code Medium-11' -nb black -sb '#555555' -nf white")
   , ("M-<Return>", spawn "kitty")
   , ("M-e", spawn "emacs")
   , ("M-f", sendMessage $ Multi.Toggle MultiI.NBFULL)
   , ("M-d", spawn "~/.config/Ankama/Retro/dofus1electron")
   , ("M-w", gotoMenu)
+  , ("<XF86AudioLowerVolume>", spawn "amixer -c 0 set Master 5-")
+  , ("<XF86AudioRaiseVolume>", spawn "amixer -c 0 set Master 5+")
   ]
   
 myConfig = def

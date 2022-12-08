@@ -1,19 +1,21 @@
 Config {
-       font = "Fira Code Regular 13"
+       font = "Fira Code Medium 10"
        , bgColor = "#000000"
        , fgColor = "#ffffff"
-       , position = Top
+       , borderColor = "#ffffff"
+       , borderWidth = 2
+       , position = Static {xpos = 0, ypos = 0, width = 1920, height = 20}
        , border = FullB
-       , template = "%StdinReader%}{ <fc=#FF0000>%locks%</fc> | %pacman% | %default:Master% | %dynnetwork% %hostname_ip% | %coretemp% | %memory% | %multicpu% | %date% "
+       , template = "%StdinReader%}{ <fc=#FF0000>%locks%</fc> | pc:%pacman% | vol:%default:Master% | %dynnetwork% %hostname_ip% | temp:%coretemp% | mem:%memory% | cpu:%cpu% | %date% "
        , overrideRedirect = True
        , persistent = True
        , iconRoot = ".config/icons/"
        , commands = [
          Run Memory ["-t","<usedratio>%"] 10
-       , Run DynNetwork [ "-t" , "<fn=1>\xf1eb</fn>  <dev>:<rx>kB/s"] 10
+       , Run DynNetwork [ "-t", "<dev>:<rx>kB/s", "-m 4"] 10
        -- , Run Wireless "wlo1" [ "-t", "<essid>" ] 10
-       , Run MultiCpu [ "-t" , "<total0>%|<total1>%"] 10
-       , Run CoreTemp ["-t","<core0><fn=1>\x00B0</fn>C"] 10
+       , Run Cpu [ "-t" , "<total>%", "-m 2", "--High", "60", "--high", "red"] 10
+       , Run CoreTemp ["-t","<core0><fn=1>\x00B0</fn>C", "--High", "60", "--high", "red"] 10
        , Run Date           "%F %T" "date" 10
        , Run Swap [] 10
        , Run Volume "default" "Master" ["-t", "<volume>"] 10
