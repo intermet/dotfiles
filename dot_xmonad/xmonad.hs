@@ -19,12 +19,25 @@ myLayout = Multi.mkToggle1 MultiI.NBFULL $ (myTall ||| myFull)
 
 main = xmonad =<< statusBar myBar myPP toggleStrutsKey myConfig
 
-myWorkspaces = map show [1..9]
+
+myWorkspaces = (map pad) . (map show) $ [1..9]
+
+myppTitle :: String -> String
+myppTitle s = ""
+
+myppLayout :: String -> String
+myppLayout s = ""
+
+underlineWorkspace s = "<box type=Bottom width=4>" ++ s ++ "</box>"
 
 myBar = "xmobar"
 myPP = xmobarPP {
-  ppCurrent = xmobarColor "#FFFFFF" "#444444" . wrap "[" "]"
-  , ppHiddenNoWindows = xmobarColor "#888888" ""
+  ppCurrent = underlineWorkspace
+  , ppHidden = xmobarColor "#FFFFFF" "#000000"
+  , ppHiddenNoWindows = xmobarColor "#888888" "#000000"
+  , ppTitle = myppTitle
+  , ppLayout = myppLayout
+  , ppWsSep = "|"
   }
 
 toggleStrutsKey XConfig {XMonad.modMask = modMask} = (modMask, xK_b)

@@ -1,11 +1,10 @@
 Config {
-       font = "Fira Code Regular 12"
-       , additionalFonts = ["Sauce Code Pro Medium Nerd Font 11"]
+       font = "Fira Code Regular 13"
        , bgColor = "#000000"
        , fgColor = "#ffffff"
        , position = Top
        , border = FullB
-       , template = "%StdinReader%}{ | %pacman% | %default:Master% | %dynnetwork% %hostname_ip% | %coretemp% | %memory% | %multicpu% | %date% "
+       , template = "%StdinReader%}{ <fc=#FF0000>%locks%</fc> | %pacman% | %default:Master% | %dynnetwork% %hostname_ip% | %coretemp% | %memory% | %multicpu% | %date% "
        , overrideRedirect = True
        , persistent = True
        , iconRoot = ".config/icons/"
@@ -21,6 +20,7 @@ Config {
        , Run StdinReader
        , Run Com "hostname" ["-i"] "hostname_ip" 10
        , Run Com "sh" ["-c", "checkupdates | wc -l"] "pacman" 3600
+       , Run Locks 
        -- , Run Com "sh" ["-c", "~/draw.py"] "sinus" 10
        ]
 }
