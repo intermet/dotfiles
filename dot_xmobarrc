@@ -1,5 +1,6 @@
 Config {
-       font = "Fira Code Medium 10"
+       font = "Hack Medium 10"
+       , additionalFonts = ["Hack Bold 11"]
        , bgColor = "#000000"
        , fgColor = "#ffffff"
        , borderColor = "#ffffff"

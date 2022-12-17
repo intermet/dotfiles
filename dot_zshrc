@@ -6,9 +6,9 @@ bindkey -e
 # End of lines configured by zsh-newuser-install
 #
 
-PROMPT='%M %F{#800000}%~%f '
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-# source ./zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+PROMPT=' %B%F{#fb2e01}#%f %b'
+source $HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $HOME/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
@@ -47,7 +47,6 @@ zstyle :compinstall filename '/home/ziyed/.zshrc'
 autoload -Uz compinit
 compinit
 # End of lines added by compinstall
-source /home/ziyed/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /usr/share/fzf/key-bindings.zsh 
 source /usr/share/fzf/completion.zsh 
 [ -f /opt/miniconda3/etc/profile.d/conda.sh ] && source /opt/miniconda3/etc/profile.d/conda.sh
@@ -58,4 +57,10 @@ eval $(opam env)
 
 
 export PATH=/home/ziyed/scripts:$PATH
-source /home/ziyed/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+export PATH=$HOME/.cabal/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
+
+#if command -v tmux &> /dev/null && [ -n "$PS1" ] && [[ ! "$TERM" =~ screen ]] && [[ ! "$TERM" =~ tmux ]] && [ -z "$TMUX" ]; then
+#  exec tmux
+#fi
+
