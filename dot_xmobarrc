@@ -1,5 +1,5 @@
 Config {
-       font = "Hack Medium 10"
+       font = "xft:Hack Medium 10"
        , additionalFonts = ["Hack Bold 11"]
        , bgColor = "#000000"
        , fgColor = "#ffffff"
@@ -7,7 +7,7 @@ Config {
        , borderWidth = 2
        , position = Static {xpos = 0, ypos = 0, width = 1920, height = 20}
        , border = FullB
-       , template = "%StdinReader%}{ <fc=#FF0000>%locks%</fc> | pc:%pacman% | vol:%default:Master% | %dynnetwork% %hostname_ip% | temp:%coretemp% | mem:%memory% | cpu:%cpu% | %date% "
+       , template = "%StdinReader%}{ <fc=#FF0000>%locks%</fc> | %battery% | pc:%pacman% | vol:%default:Master% | %dynnetwork% %hostname_ip% | temp:%coretemp% | mem:%memory% | cpu:%cpu% | %date% "
        , overrideRedirect = True
        , persistent = True
        , iconRoot = ".config/icons/"
@@ -24,6 +24,7 @@ Config {
        , Run Com "hostname" ["-i"] "hostname_ip" 10
        , Run Com "sh" ["-c", "checkupdates | wc -l"] "pacman" 3600
        , Run Locks 
+       , Run BatteryP ["BAT0"] ["-t", "<left>% <acstatus>"] 600
        -- , Run Com "sh" ["-c", "~/draw.py"] "sinus" 10
        ]
 }
