@@ -42,13 +42,16 @@
 
 (use-package orderless
   :init
-  :custom (completion-styles '(orderless)))
-
-(use-package fira-code-mode
-  :custom (fira-code-mode-disabled-ligatures '("x" "[]" "<>"))
-  :init
-  (global-fira-code-mode)
+  :custom (completion-styles '(orderless))
+  :config
+  (setq orderless-component-separator 'orderless-escapable-split-on-space)
   )
+
+;; (use-package fira-code-mode
+;;   :custom (fira-code-mode-disabled-ligatures '("x" "[]" "<>"))
+;;   :init
+;;   (global-fira-code-mode)
+;;   )
 
 (use-package modus-themes
   :ensure
@@ -76,14 +79,25 @@
   (telephone-line-mode 1)
   )
 
+
 (use-package dashboard
   :custom
   (dashboard-startup-banner 'logo)
-  (dashboard-items '((recents . 5)
-                     (agenda . 5)))
   (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
   :config
-  (dashboard-setup-startup-hook))
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+  (dashboard-setup-startup-hook)
+  (setq dashboard-items '((recents  . 5)
+                          (bookmarks . 5)
+                          (projects . 5)
+                          (registers . 5)))
+  )
+
+(use-package page-break-lines
+  :config
+  (global-page-break-lines-mode)
+  )
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -105,21 +119,36 @@
   (popper-mode +1)
   (popper-echo-mode +1))     
 
+;;; evil-mode
 (use-package evil
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
   :config
+  (use-package evil-leader
+    :config
+    (evil-leader/set-leader "<SPC>")
+    )
+  (global-evil-leader-mode)
   (evil-mode 1)
   )
 
-(define-key evil-normal-state-map (kbd "<up>") 'nope)
-(define-key evil-normal-state-map (kbd "<down>") 'nope)
-(define-key evil-normal-state-map (kbd "<left>") 'nope)
-(define-key evil-normal-state-map (kbd "<right>") 'nope)
-(define-key evil-normal-state-map  "f" 'evil-avy-goto-word-1)
-;; ;; (define-key evil-visual-state-map  "f" 'evil-avy-goto-char)
-;; (define-key evil-normal-state-map  "gl" 'evil-avy-goto-line)
+(use-package evil-tex
+  :hook
+  (
+   (LaTeX-mode . evil-tex-mode)
+   )
+  )
+
+(with-eval-after-load 'evil-maps
+  (define-key evil-normal-state-map (kbd "<up>") 'nope)
+  (define-key evil-normal-state-map (kbd "<down>") 'nope)
+  (define-key evil-normal-state-map (kbd "<left>") 'nope)
+  (define-key evil-normal-state-map (kbd "<right>") 'nope)
+  (define-key evil-normal-state-map  "f" 'evil-avy-goto-char-in-line)
+  (define-key evil-normal-state-map  "F" 'evil-avy-goto-word-1)
+  (define-key evil-normal-state-map  "gl" 'evil-avy-goto-line)
+  )
 
 (use-package evil-commentary
   :config
@@ -137,6 +166,14 @@
   :config
   (evil-goggles-mode)
   (evil-goggles-use-diff-faces))
+
+(use-package evil-multiedit
+  :config
+  (evil-multiedit-default-keybinds)
+  (evil-define-key 'insert evil-multiedit-mode-map (kbd "C-n") #'evil-multiedit-next)
+  (evil-define-key 'insert evil-multiedit-mode-map (kbd "C-p") #'evil-multiedit-prev)
+  (evil-define-key 'insert evil-multiedit-mode-map (kbd "C-p") #'evil-multiedit-prev)
+  )
 
 (defun orderless-fast-dispatch (word index total)
   (and (= index 0) (= total 1) (length< word 4)
@@ -203,7 +240,6 @@
   (setq lsp-lens-enable nil)
   (setq lsp-signature-auto-activate nil)
   (setq lsp-signature-render-documentation nil)
-
   :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
          (TeX-mode . lsp)
          (tuareg-mode . lsp)
@@ -212,7 +248,8 @@
   :commands lsp)
 
 
-(use-package lsp-haskell)
+(use-package lsp-haskell
+  )
 
 (use-package pipenv
   :hook (python-mode . pipenv-mode)
@@ -266,14 +303,8 @@
           ("thr" "Insert theorem env" "" cdlatex-environment ("theorem") t nil)))
   )
   
-(use-package evil-tex
-  :hook
-  (
-   (LaTeX-mode . evil-tex-mode)
-   )
-  )
 
-(setq TeX-view-program-selection '((output-pdf "PDF Tools")))
+(setq TeX-view-program-selection '((output-pdf "Okular")))
 (setq TeX-source-correlate-mode t)
 (setq TeX-source-correlate-start-server t)
 (add-hook 'TeX-after-TeX-LaTeX-command-finished-hook
@@ -304,24 +335,31 @@
   (add-hook 'utop-mode-hook (lambda() (display-line-numbers-mode -1)))
   )
 
-(use-package tree-sitter
-  :hook
-  (python-mode . tree-sitter-hl-mode)
-  (tuareg-mode . tree-sitter-hl-mode)
-  (TeX-mode . tree-sitter-hl-mode)
-  ;; (haskell-mode . tree-sitter-hl-mode)
+(use-package utop
+  :config
+  (setq utop-command "opam exec -- dune utop . -- -emacs")
   )
 
-(use-package tree-sitter-langs
-  :straight (tree-sitter-langs
-             :host github
-             :depth full
-             :repo "intermet/tree-sitter-langs"
-             :branch "master"
-             )
-  :config
-  (add-to-list 'tree-sitter-major-mode-language-alist '(latex-mode . latex))
- )
+;; (use-package tree-sitter
+;;   :hook
+;;   (python-mode . tree-sitter-hl-mode)
+;;   (tuareg-mode . tree-sitter-hl-mode)
+;;   (TeX-mode . tree-sitter-hl-mode)
+;;   ;; (haskell-mode . tree-sitter-hl-mode)
+;;   )
+;; (use-package tree-sitter-fold
+;;   :straight (:host github :repo "junyi-hou/tree-sitter-fold"))
+
+;; (use-package tree-sitter-langs
+;;   :straight (tree-sitter-langs
+;;              :host github
+;;              :depth full
+;;              :repo "intermet/tree-sitter-langs"
+;;              :branch "master"
+;;              )
+;;   :config
+;;   (add-to-list 'tree-sitter-major-mode-language-alist '(latex-mode . latex))
+;;  )
 
 
 (use-package ocamlformat
@@ -394,7 +432,7 @@ _x_: exec
 
 (defun find-xmonadhs ()
   (interactive)
-  (find-file "~/.xmonad/xmonad.hs")
+  (find-file "~/.config/xmonad/xmonad.hs")
   )
 
 (defhydra hydra-edit-config-files (:color pink
@@ -406,7 +444,7 @@ _x_: xmonad.hs  _z_: zshrc
 _b_: xmobarrc
 "
   ("i" find-user-init-file :color blue)
-  ("x" (find-file "~/.xmonad/xmonad.hs") :color blue)
+  ("x"  find-xmonadhs :color blue)
   ("b" (find-file "~/.xmobarrc") :color blue)
   ("z" (find-file "~/.zshrc") :color blue)
   ("j" (find-file "~/.xinitrc") :color blue)
@@ -414,6 +452,19 @@ _b_: xmobarrc
 )
 
 ;; (use-package iedit)
+
+(use-package window
+  :straight (:type built-in)
+  :custom
+  (display-buffer-alist
+   '(("magit"
+      (display-buffer-in-side-window)
+      (side . right)
+      (window-width . 0.25)
+      (window-parameters . ((mode-line-format . (" " "%b"))))
+      ))
+   )
+  )
 
 
 (defun ziyed/dired-vc ()
@@ -453,13 +504,14 @@ _b_: xmobarrc
 
 (use-package perspective
   :bind
-  ("C-x C-b" . persp-switch-to-buffer*)
-  :custom
-  (persp-mode-prefix-key (kbd "C-c p"))
+  ("C-x b" . persp-switch-to-buffer*)
+  ;; :custom
+  ;; (persp-mode-prefix-key (kbd "C-"))
   :init
+  (setq persp-suppress-no-prefix-key-warning t)
   (persp-mode)
-  :bind
-  ()
+  :config
+  (define-key evil-normal-state-map (kbd "<SPC>p") 'perspective-map)
   )
 
 (use-package find-file-in-project)
@@ -470,12 +522,57 @@ _b_: xmobarrc
   (add-hook 'vterm-mode-hook (lambda() (display-line-numbers-mode -1)))
   )
 
+(define-key evil-normal-state-map (kbd "<SPC>x") 'eval-buffer)
 
 (use-package pdf-tools
   :config
   (add-hook 'doc-view-mode-hook (lambda() (display-line-numbers-mode -1)))
   )
 
+(add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
+(require 'mu4e)
 
+(use-package magit)
+
+(use-package embark
+  :bind
+  (("C-." . embark-act)         ;; pick some comfortable binding
+   ("C-;" . embark-dwim)        ;; good alternative: M-.
+   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+  )
+
+(use-package embark-consult
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
  
+(use-package imenu-list)
+
+
+(use-package caml)
+
+(use-package yafolding
+  :config
+  (defvar yafolding-mode-map
+    (let ((map (make-sparse-keymap)))
+      (define-key map (kbd "<C-M-return>") #'yafolding-toggle-all)
+      (define-key map (kbd "<C-return>") #'yafolding-toggle-element)
+      map))
+  )
+
+(use-package iedit)
+
+(use-package projectile
+  :config
+  (projectile-mode +1)
+  )
+(use-package persp-projectile)
+
+(use-package rainbow-mode)
+
 (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+
+(use-package esup)
+
+(setq org-html-validation-link nil)
+
+(setq native-comp-async-report-warnings-errors nil)
